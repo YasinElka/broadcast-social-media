@@ -6,7 +6,6 @@ namespace BroadcastSocialMedia.Models
 
     {
         public string? Name { get; set; } // defines a Name property for the user
-
-
+        public ICollection<BroadCast> broadcasts { get; set; } // Navigation property for related broadcasts
     }
 }

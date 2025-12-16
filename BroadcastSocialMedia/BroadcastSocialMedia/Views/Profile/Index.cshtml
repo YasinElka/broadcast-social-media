@@ -3,9 +3,13 @@
 
 <div>
     <h1>Update Profile</h1>
-
-    <form action=Profile/Update" method="post">
-        <input value="text" value=@Model.Name" placeholder="Name"/>
+    <form action="Profile/Update" method="post">
+        <input value="@Model.Name" name="Name" placeholder="Name" />
         <input type="submit" value="Save" />
     </form>
+   
 </div>
+
+
+
+

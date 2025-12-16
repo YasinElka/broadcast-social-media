@@ -9,6 +9,8 @@ namespace BroadcastSocialMedia.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+
         }
+        public DbSet<BroadCast> Broadcasts { get; set; }
     }
 }

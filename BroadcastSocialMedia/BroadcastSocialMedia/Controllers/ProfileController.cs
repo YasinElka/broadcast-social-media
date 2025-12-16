@@ -17,13 +17,14 @@ namespace BroadcastSocialMedia.Controllers
         {
             var user = await _userManager.GetUserAsync(User); // Get the current user's ID
            
-            var ViewModel = new ViewModels.ProfileIndexViewModel
+            var viewModel = new ProfileIndexViewModel()
             {
                 Name = user.Name ?? "" // Set the Name property in the ViewModel
             };
-            return View(ViewModel);
+            return View(viewModel);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Update(ProfileIndexViewModel viewModel)
         {
             var user = await _userManager.GetUserAsync(User);
