@@ -1,0 +1,20 @@
+﻿@foreach (var user in Model)
+{
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="user-card">
+            <!-- användarinfo -->
+
+            <div class="user-card-actions">
+                <!-- ÄNDRA DENNA FORM TILL ATT ANROPA Follow() -->
+                <form asp-controller="Broadcast" asp-action="Follow" method="post">
+                    <input type="hidden" name="userId" value="@user.UserId" />
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-user-plus"></i> Följ
+                    </button>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+}

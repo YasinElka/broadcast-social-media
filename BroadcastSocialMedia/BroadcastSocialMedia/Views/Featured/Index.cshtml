@@ -1,0 +1,52 @@
+﻿@model List<BroadcastSocialMedia.Models.Broadcast>
+
+<h2>Populära inlägg</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>Inga populära inlägg ännu.</p>
+}
+else
+{
+    @foreach (var broadcast in Model) // Loop through each broadcast
+    {
+        @if (broadcast == null) { continue; }
+       
+
+        <div class="broadcast-card">
+            <div class="user-info">
+                @if (broadcast.User != null)
+                {
+                    <img src="@broadcast.User.ProfileImageUrl" class="profile-img" 
+                         onerror="this.src='/images/default-avatar.png'" />
+                    <strong>@broadcast.User.UserName</strong>
+                }
+                else
+                {
+                    <img src="/images/default-avatar.png" class="profile-img" />
+                    <strong>Unknown User</strong>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(broadcast.Content))
+            {
+                <p>@broadcast.Content</p>
+            }
+
+            @if (!string.IsNullOrEmpty(broadcast.ImageUrl))
+            {
+                <img src="@broadcast.ImageUrl" class="broadcast-image"
+                     onerror="this.style.display='none'" />
+            }
+
+            <div class="broadcast-stats">
+                <span class="likes">
+                    ❤️ @(broadcast.Likes?.Count ?? 0) gillningar
+                </span>
+                <span class="time">
+                    @broadcast.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                </span>
+            </div>
+        </div>
+    }
+}

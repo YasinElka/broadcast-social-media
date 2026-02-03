@@ -1,4 +1,4 @@
-﻿@model BroadcastSocialMedia.ViewModels.HomeIndexViewModel
+﻿@model BroadcastSocialMedia.ViewModels.HomeIndexViewModel 
 
 @{
     ViewData["Title"] = "Broadcasts";
@@ -6,51 +6,47 @@
 
 <div class="container">
     <h1>Broadcasts</h1>
-
-    @if (!Model.Broadcasts.Any())
+    
+    @if (!Model.Broadcasts.Any())  
     {
         <div class="alert alert-info">
             No broadcasts to show.
-            @if (User.Identity?.IsAuthenticated != true)
-            {
-                <a asp-area="Identity" asp-page="/Account/Login">Login</a>
-                <span>to see broadcasts from users you follow!</span>
-            }
         </div>
     }
-
-    @foreach (var broadcast in Model.Broadcasts)
+    
+    @foreach (var broadcast in Model.Broadcasts) 
     {
         <div class="broadcast-card">
             <div class="broadcast-header">
-                <img src="@broadcast.UserProfileImage"
-                     alt="@broadcast.UserName"
-                     class="user-avatar"
+                <img src="@broadcast.UserProfileImage" 
+                     alt="@broadcast.UserName" 
+                     class="user-avatar" 
                      onerror="this.src='/images/default-avatar.png'" />
                 <div>
                     <h5>@broadcast.UserName</h5>
                     <small>@broadcast.CreatedAt.ToString("g")</small>
                 </div>
             </div>
-
-            <p>@broadcast?.Content</p>
-
-            @if (!string.IsNullOrEmpty(broadcast?.ImageUrl))
+            
+            <p>@broadcast.Content</p>
+            
+            @if (!string.IsNullOrEmpty(broadcast.ImageUrl))
             {
-                <img src="@broadcast.ImageUrl"
-                     alt="Broadcast image"
+                <img src="@broadcast.ImageUrl" 
+                     alt="Broadcast image" 
                      class="broadcast-image" />
             }
-
-            @if (!string.IsNullOrEmpty(broadcast?.Platform))
+            
+            @if (!string.IsNullOrEmpty(broadcast.Platform))
             {
                 <span class="platform-badge">@broadcast.Platform</span>
             }
-
+            
+            <!-- Like-knapp -->
             <form asp-controller="Broadcast" asp-action="Like" method="post">
-                <input type="hidden" name="id" value="@broadcast?.Id" />
-                <button type="submit" class="btn @(broadcast?.IsLikedByCurrentUser == true ? "btn-danger" : "btn-outline-danger")">
-                    @if (broadcast?.IsLikedByCurrentUser == true)
+                <input type="hidden" name="id" value="@broadcast.Id" />
+                <button type="submit" class="btn @(broadcast.IsLikedByCurrentUser ? "btn-danger" : "btn-outline-danger")">
+                    @if (broadcast.IsLikedByCurrentUser)
                     {
                         <span>❤️ Liked</span>
                     }
@@ -58,7 +54,7 @@
                     {
                         <span>🤍 Like</span>
                     }
-                    <span class="badge bg-secondary">@broadcast?.LikeCount</span>
+                    <span class="badge bg-secondary">@broadcast.LikeCount</span>
                 </button>
             </form>
         </div>
@@ -73,13 +69,13 @@
         margin-bottom: 20px;
         background: white;
     }
-
+    
     .broadcast-header {
         display: flex;
         align-items: center;
         margin-bottom: 15px;
     }
-
+    
     .user-avatar {
         width: 50px;
         height: 50px;
@@ -87,13 +83,13 @@
         object-fit: cover;
         margin-right: 15px;
     }
-
+    
     .broadcast-image {
         max-width: 100%;
         border-radius: 8px;
         margin: 10px 0;
     }
-
+    
     .platform-badge {
         display: inline-block;
         background: #007bff;

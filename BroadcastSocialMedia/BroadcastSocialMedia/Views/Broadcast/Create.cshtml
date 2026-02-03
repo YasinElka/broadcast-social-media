@@ -1,0 +1,41 @@
+﻿@model HomeBroadcastViewModel
+
+<form asp-controller="Home" asp-action="Broadcast" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()  <!-- Lägg till för säkerhet -->
+
+    <div class="form-group">
+        <label asp-for="Content">Ditt inlägg</label>
+        <textarea asp-for="Content" class="form-control" rows="3" required></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Platform">Plattform</label>
+        <select asp-for="Platform" class="form-control" required>
+            <option value="">Välj plattform</option>
+            <option value="Twitter">Twitter</option>
+            <option value="Instagram">Instagram</option>
+            <option value="Facebook">Facebook</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="TikTok">TikTok</option>
+            <option value="YouTube">YouTube</option>
+            <option value="Annat">Annat</option>
+        </select>
+        <span asp-validation-for="Platform" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="imageFile">Ladda upp bild (valfritt)</label>
+        <input type="file" name="imageFile" class="form-control" accept="image/*" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CreatedAt">Schemalägg (valfritt)</label>
+        <input asp-for="CreatedAt" type="datetime-local" class="form-control" />
+        <small class="form-text text-muted">Lämna tomt för att publicera direkt</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Publicera</button>
+</form>
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-secondary mt-3">Tillbaka till startsidan</a>

@@ -1,15 +1,78 @@
-﻿@using BroadcastSocialMedia.ViewModels
-@model ProfileIndexViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model BroadcastSocialMedia.ViewModels.ProfileIndexViewModel
 
-<div>
-    <h1>Update Profile</h1>
-    <form action="Profile/Update" method="post">
-        <input value="@Model.Name" name="Name" placeholder="Name" />
-        <input type="submit" value="Save" />
+@{
+    ViewData["Title"] = "Uppdatera Profil";
+}
+
+<div class="container mt-4">
+    <!-- Rubrik -->
+    <h1 class="mb-4">Uppdatera Profil</h1>
+
+    <!-- Meddelanden från TempData -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <!-- Formulär -->
+    <form asp-action="Update" method="post" class="border p-4 rounded bg-light">
+        <!-- CSRF-skydd -->
+        @Html.AntiForgeryToken()
+
+        <!-- Valideringsfel -->
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Användarnamn -->
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Användarnamn</label>
+            <input asp-for="Name" class="form-control" placeholder="Ditt användarnamn" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" placeholder="din.email@exempel.se" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <!-- Bio -->
+        <div class="mb-3">
+            <label asp-for="Bio" class="form-label">Om mig (Bio)</label>
+            <textarea asp-for="Bio" class="form-control" rows="4"
+                      placeholder="Berätta lite om dig själv..."></textarea>
+            <span asp-validation-for="Bio" class="text-danger"></span>
+        </div>
+
+        <!-- Profilbild URL -->
+        <div class="mb-3">
+            <label asp-for="ProfileImageUrl" class="form-label">Profilbild URL</label>
+            <input asp-for="ProfileImageUrl" class="form-control"
+                   placeholder="https://exempel.se/bild.jpg" />
+            <span asp-validation-for="ProfileImageUrl" class="text-danger"></span>
+            <small class="form-text text-muted">Länk till din profilbild</small>
+        </div>
+
+        <!-- Knappar -->
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Spara ändringar</button>
+            <a href="/" class="btn btn-secondary">Avbryt</a>
+        </div>
     </form>
-   
+
+    <!-- Visa aktuell profilbild om det finns -->
+    @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+    {
+        <div class="mt-4">
+            <h5>Aktuell profilbild:</h5>
+            <img src="@Model.ProfileImageUrl" alt="Profilbild"
+                 class="img-thumbnail" style="max-width: 200px;" />
+        </div>
+    }
 </div>
 
-
-
-
+<!-- Inkludera valideringsscript (finns i default ASP.NET Core) -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
