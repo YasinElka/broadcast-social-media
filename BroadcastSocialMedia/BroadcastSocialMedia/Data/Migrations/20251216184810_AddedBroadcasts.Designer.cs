@@ -93,7 +93,7 @@ namespace BroadcastSocialMedia.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("BroadcastSocialMedia.Models.BroadCast", b =>
+            modelBuilder.Entity("BroadcastSocialMedia.Models.Broadcast", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -255,7 +255,7 @@ namespace BroadcastSocialMedia.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BroadcastSocialMedia.Models.BroadCast", b =>
+            modelBuilder.Entity("BroadcastSocialMedia.Models.Broadcast", b =>
                 {
                     b.HasOne("BroadcastSocialMedia.Models.ApplicationUser", "User")
                         .WithMany("broadcasts")

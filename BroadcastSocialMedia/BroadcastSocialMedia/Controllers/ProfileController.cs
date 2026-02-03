@@ -2,36 +2,98 @@
 using BroadcastSocialMedia.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BroadcastSocialMedia.Controllers
 {
+    // Denna controller hanterar användarprofiler
     public class ProfileController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager; // UserManager for ApplicationUser
+        // UserManager för att hantera användare i Identity
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProfileController(UserManager<ApplicationUser>userManager)
+        // Konstruktor: Injicera UserManager
+        public ProfileController(UserManager<ApplicationUser> userManager)
         {
-           _userManager = userManager; // Dependency injection of UserManager
+            _userManager = userManager;
         }
-        public async Task <IActionResult> Index()
+
+        // GET: /Profile/Index - Visar användarens profil
+        public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User); // Get the current user's ID
-           
-            var viewModel = new ProfileIndexViewModel()
+            // Hämta den inloggade användaren
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            // Om ingen användare hittas, redirect till login
+            if (currentUser == null)
             {
-                Name = user.Name ?? "" // Set the Name property in the ViewModel
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Skapa ViewModel med användarens data
+            var model = new ProfileIndexViewModel
+            {
+                Name = currentUser.UserName ?? string.Empty,          // Användarnamn
+                ProfileImageUrl = currentUser.ProfileImageUrl ?? "/images/default-avatar.png",  // Profilbild
+                Bio = currentUser.Bio ?? string.Empty,               // Bio/om mig
+                Email = currentUser.Email ?? string.Empty            // Email
             };
-            return View(viewModel);
+
+            // Visa profilsidan med data
+            return View(model);
         }
 
+        // POST: /Profile/Update - Uppdaterar användarens profil
         [HttpPost]
+        [ValidateAntiForgeryToken]  // Skydd mot CSRF-attacker
         public async Task<IActionResult> Update(ProfileIndexViewModel viewModel)
         {
-            var user = await _userManager.GetUserAsync(User);
-            user.Name = viewModel.Name; // Update the Name property
-            await _userManager.UpdateAsync(user); // Save changes to the user
+            // Validera att data är korrekt
+            if (!ModelState.IsValid)
+            {
+                return View("Index", viewModel);
+            }
 
-            return RedirectToAction("/"); // Redirect to the Index action
+            // Hämta den inloggade användaren
+            var user = await _userManager.GetUserAsync(User);
+
+            // Om ingen användare hittas, redirect till login
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Uppdatera användarens information
+            user.UserName = viewModel.Name;                          // Nytt användarnamn
+            user.Bio = viewModel.Bio ?? string.Empty;                // Ny bio
+            user.ProfileImageUrl = viewModel.ProfileImageUrl ?? "/images/default-avatar.png";  // Ny profilbild
+
+            // Uppdatera email om det anges
+            if (!string.IsNullOrEmpty(viewModel.Email))
+            {
+                user.Email = viewModel.Email;                        // Ny email
+            }
+
+            // Spara ändringarna till databasen
+            var result = await _userManager.UpdateAsync(user);
+
+            // Kontrollera om uppdateringen lyckades
+            if (result.Succeeded)
+            {
+                TempData["Success"] = "Din profil har uppdaterats!"; // Meddelande om lyckat
+            }
+            else
+            {
+                // Visa felmeddelanden om det misslyckades
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View("Index", viewModel);
+            }
+
+            // Redirect tillbaka till profilsidan
+            return RedirectToAction("Index");
         }
     }
 }

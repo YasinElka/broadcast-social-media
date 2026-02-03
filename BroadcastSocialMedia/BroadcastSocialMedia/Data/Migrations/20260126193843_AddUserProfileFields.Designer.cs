@@ -4,6 +4,7 @@ using BroadcastSocialMedia.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BroadcastSocialMedia.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260126193843_AddUserProfileFields")]
+    partial class AddUserProfileFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,15 +107,10 @@ namespace BroadcastSocialMedia.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
@@ -121,9 +119,7 @@ namespace BroadcastSocialMedia.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Published")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ScheduledFor")
                         .HasColumnType("datetime2");
@@ -150,9 +146,7 @@ namespace BroadcastSocialMedia.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("LikedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -161,9 +155,7 @@ namespace BroadcastSocialMedia.Data.Migrations
 
                     b.HasIndex("BroadcastId");
 
-                    b.HasIndex("UserId", "BroadcastId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Likes");
                 });
@@ -177,9 +169,7 @@ namespace BroadcastSocialMedia.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("FollowedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FollowerId")
                         .IsRequired()
@@ -191,10 +181,9 @@ namespace BroadcastSocialMedia.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FollowingId");
+                    b.HasIndex("FollowerId");
 
-                    b.HasIndex("FollowerId", "FollowingId")
-                        .IsUnique();
+                    b.HasIndex("FollowingId");
 
                     b.ToTable("UserFollowings");
                 });
@@ -340,8 +329,7 @@ namespace BroadcastSocialMedia.Data.Migrations
                 {
                     b.HasOne("BroadcastSocialMedia.Models.ApplicationUser", "User")
                         .WithMany("Broadcasts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -356,8 +344,7 @@ namespace BroadcastSocialMedia.Data.Migrations
 
                     b.HasOne("BroadcastSocialMedia.Models.ApplicationUser", "User")
                         .WithMany("Likes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Broadcast");
 

@@ -1,8 +1,17 @@
-﻿namespace BroadcastSocialMedia.ViewModels
+﻿using System;
+
+namespace BroadcastSocialMedia.ViewModels
 {
     public class HomeBroadcastViewModel
     {
-        public string Message { get; set; }
-
+        public int Id { get; set; }
+        public string Content { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public string UserProfileImage { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public string Platform { get; set; } = string.Empty;
+        public string? ImageUrl { get; set; }
+        public int LikeCount { get; set; }
+        public bool IsLikedByCurrentUser { get; set; }
     }
 }
