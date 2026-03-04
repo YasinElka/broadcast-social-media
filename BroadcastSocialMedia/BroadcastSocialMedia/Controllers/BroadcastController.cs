@@ -46,7 +46,6 @@ namespace BroadcastSocialMedia.Controllers
                 UserName = b.User?.UserName ?? "Unknown",
                 UserProfileImage = b.User?.ProfileImageUrl ?? "/images/default-avatar.png",
                 CreatedAt = b.CreatedAt,
-                Platform = b.Platform ?? string.Empty,
                 ImageUrl = b.ImageUrl,
                 LikeCount = b.LikeCount,
                 IsLikedByCurrentUser = currentUserId != null &&
@@ -98,8 +97,6 @@ namespace BroadcastSocialMedia.Controllers
             {
                 Content = model.Content,
                 UserId = user.Id,
-                ScheduledFor = model.CreatedAt,
-                Platform = model.Platform ?? string.Empty,
                 CreatedAt = DateTime.UtcNow,
                 Published = model.CreatedAt <= DateTime.UtcNow
                     ? DateTime.UtcNow

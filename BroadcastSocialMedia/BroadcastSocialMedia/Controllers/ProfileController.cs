@@ -18,10 +18,10 @@ namespace BroadcastSocialMedia.Controllers
             _userManager = userManager;
         }
 
-        // GET: /Profile/Index - Visar användarens profil
+       // Visar användarens profil
         public async Task<IActionResult> Index()
         {
-            // Hämta den inloggade användaren
+            // Hämtar den inloggade användaren
             var currentUser = await _userManager.GetUserAsync(User);
 
             // Om ingen användare hittas, redirect till login
@@ -43,7 +43,7 @@ namespace BroadcastSocialMedia.Controllers
             return View(model);
         }
 
-        // POST: /Profile/Update - Uppdaterar användarens profil
+       // Uppdaterar användarens profil
         [HttpPost]
         [ValidateAntiForgeryToken]  // Skydd mot CSRF-attacker
         public async Task<IActionResult> Update(ProfileIndexViewModel viewModel)

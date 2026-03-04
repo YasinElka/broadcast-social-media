@@ -1,0 +1,110 @@
+﻿@model BroadcastSocialMedia.Models.ApplicationUser
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = $"{Model.UserName}s profil";
+    var currentUser = await UserManager.GetUserAsync(User);
+    var isCurrentUser = currentUser?.Id == Model.Id;
+}
+
+<div class="container">
+    <div class="row">
+        <!-- Profilkort -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <img src="@(Model.ProfileImageUrl ?? "/images/default-avatar.png")"
+                         alt="@Model.UserName"
+                         class="rounded-circle img-fluid mb-3 border border-3 border-primary"
+                         style="width:150px;height:150px;object-fit:cover" />
+
+                    <h4>@Model.UserName</h4>
+
+                    @if (!string.IsNullOrEmpty(Model.Bio))
+                    {
+                        <p class="text-muted">@Model.Bio</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted fst-italic">Ingen bio ännu</p>
+                    }
+
+                    <div class="row mt-3">
+                        <div class="col-4">
+                            <h6>Inlägg</h6>
+                            <p class="h5">@(Model.Broadcasts?.Count ?? 0)</p>
+                        </div>
+                        <div class="col-4">
+                            <h6>Följare</h6>
+                            <p class="h5">@(Model.Followers?.Count ?? 0)</p>
+                        </div>
+                        <div class="col-4">
+                            <h6>Följer</h6>
+                            <p class="h5">@(Model.Following?.Count ?? 0)</p>
+                        </div>
+                    </div>
+
+                    @if (!isCurrentUser && User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-action="Follow" asp-controller="Home" method="post" class="mt-3">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-user-plus"></i> Följ
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Broadcasts -->
+        <div class="col-md-8">
+            <h4 class="mb-3">@Model.UserName's inlägg</h4>
+
+            @if (Model.Broadcasts == null || !Model.Broadcasts.Any())
+            {
+                <div class="alert alert-info">
+                    @if (isCurrentUser)
+                    {
+                        <span>Du har inga inlägg ännu. <a asp-action="CreateBroadcast">Skapa ditt första inlägg!</a></span>
+                    }
+                    else
+                    {
+                        <span>@Model.UserName har inga inlägg ännu.</span>
+                    }
+                </div>
+            }
+            else
+            {
+                @foreach (var broadcast in Model.Broadcasts.OrderByDescending(b => b.CreatedAt))
+                {
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <p class="card-text">@broadcast.Content</p>
+
+                            @if (!string.IsNullOrEmpty(broadcast.ImageUrl))
+                            {
+                                <img src="@broadcast.ImageUrl" class="img-fluid rounded mb-2" style="max-height:300px" />
+                            }
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock"></i> @broadcast.CreatedAt.ToString("g")
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-heart text-danger"></i> @(broadcast.Likes?.Count ?? 0)
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Tillbaka
+            </a>
+        </div>
+    </div>
+</div>

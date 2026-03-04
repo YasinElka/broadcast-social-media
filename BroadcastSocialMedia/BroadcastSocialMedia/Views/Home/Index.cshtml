@@ -5,6 +5,58 @@
 }
 
 <div class="container">
+   
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="d-flex flex-wrap gap-2 mb-4">
+           
+
+            <!-- Create Broadcast formulär -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createBroadcastModal">
+                <i class="fas fa-bullhorn me-1"></i> Create Broadcast
+            </button>
+        </div>
+
+        <!-- Skapa Broadcast Modal -->
+        <div class="modal fade" id="createBroadcastModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create New Broadcast</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form asp-action="CreateBroadcast" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <textarea name="Content" class="form-control" rows="3"
+                                      placeholder="What's on your mind?" required
+                                      maxlength="500"></textarea>
+                                <small class="text-muted float-end">
+                                    <span id="charCount">0</span>/500
+                                </small>
+                            </div>
+
+                            <!-- Bilduppladdning -->
+                            <div class="mb-3">
+                                <label for="ImageFile" class="form-label">Add Image (optional)</label>
+                                <input type="file" class="form-control" name="ImageFile"
+                                       accept="image/*" onchange="previewImage(this)">
+                                <div id="imagePreview" class="mt-2" style="display:none;">
+                                    <img id="preview" class="img-thumbnail" style="max-height: 200px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Post Broadcast</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+
     <h1>Broadcasts</h1>
 
     @if (!Model.Broadcasts.Any())
@@ -15,6 +67,10 @@
             {
                 <a asp-area="Identity" asp-page="/Account/Login">Login</a>
                 <span>to see broadcasts from users you follow!</span>
+            }
+            else
+            {
+                <span>Follow some users to see their broadcasts!</span>
             }
         </div>
     }
@@ -31,6 +87,23 @@
                     <h5>@broadcast.UserName</h5>
                     <small>@broadcast.CreatedAt.ToString("g")</small>
                 </div>
+
+                <!-- Unfollow knapp på broadcasts från användare man följer -->
+                @if (User.Identity?.IsAuthenticated == true && ViewBag.CurrentUserId != null)
+                {
+                    <div class="ms-auto">
+                        <form asp-action="Unfollow" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@broadcast.Id">
+                            <button type="submit"
+                                    class="btn btn-outline-danger btn-sm"
+                                    title="Unfollow @broadcast.UserName"
+                                    onclick="return confirm('Unfollow @broadcast.UserName?')">
+                                <i class="fas fa-user-minus"></i>
+                            </button>
+                        </form>
+                    </div>
+                }
             </div>
 
             <p>@broadcast?.Content</p>
@@ -42,14 +115,12 @@
                      class="broadcast-image" />
             }
 
-            @if (!string.IsNullOrEmpty(broadcast?.Platform))
-            {
-                <span class="platform-badge">@broadcast.Platform</span>
-            }
-
-            <form asp-controller="Broadcast" asp-action="Like" method="post">
-                <input type="hidden" name="id" value="@broadcast?.Id" />
-                <button type="submit" class="btn @(broadcast?.IsLikedByCurrentUser == true ? "btn-danger" : "btn-outline-danger")">
+            
+            <!--Gilla-markeringar -->
+            <form asp-action="Like" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="broadcastId" value="@broadcast?.Id" />
+                <button type="submit" class="btn like-button @(broadcast?.IsLikedByCurrentUser == true ? "btn-danger" : "btn-outline-danger")">
                     @if (broadcast?.IsLikedByCurrentUser == true)
                     {
                         <span>❤️ Liked</span>
@@ -61,6 +132,14 @@
                     <span class="badge bg-secondary">@broadcast?.LikeCount</span>
                 </button>
             </form>
+
+            <!-- Visar popularitetsindikator -->
+            @if (broadcast?.LikeCount > 10)
+            {
+                <span class="badge bg-warning ms-2">
+                    <i class="fas fa-fire"></i> Popular
+                </span>
+            }
         </div>
     }
 </div>
@@ -72,7 +151,13 @@
         padding: 15px;
         margin-bottom: 20px;
         background: white;
+        transition: all 0.3s ease;
     }
+
+        .broadcast-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
 
     .broadcast-header {
         display: flex;
@@ -86,12 +171,14 @@
         border-radius: 50%;
         object-fit: cover;
         margin-right: 15px;
+        border: 2px solid #007bff;
     }
 
     .broadcast-image {
         max-width: 100%;
         border-radius: 8px;
         margin: 10px 0;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
 
     .platform-badge {
@@ -103,4 +190,79 @@
         font-size: 12px;
         margin: 5px 0;
     }
+
+    .like-button {
+        transition: all 0.2s ease;
+    }
+
+        .like-button:hover {
+            transform: scale(1.05);
+        }
 </style>
+
+@section Scripts {
+    <script>
+        // Teckenräknare för broadcast-inlägg
+        document.querySelector('textarea[name="Content"]')?.addEventListener('input', function() {
+            const charCount = this.value.length;
+            document.getElementById('charCount').textContent = charCount;
+        });
+
+        // Image preview för bilduppladdning
+        function previewImage(input) {
+            const preview = document.getElementById('preview');
+            const previewContainer = document.getElementById('imagePreview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        }
+
+        // AJAX like (för bättre UX)
+        document.addEventListener('DOMContentLoaded', function() {
+            const likeForms = document.querySelectorAll('form[action*="Like"]');
+            likeForms.forEach(form => {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const broadcastId = formData.get('broadcastId');
+                    const button = this.querySelector('button');
+
+                    try {
+                        const response = await fetch('/Home/Like', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            }
+                        });
+
+                        if (response.ok) {
+                            // Toggle UI
+                            if (button.classList.contains('btn-danger')) {
+                                button.classList.remove('btn-danger');
+                                button.classList.add('btn-outline-danger');
+                                button.innerHTML = '<span>🤍 Like</span> <span class="badge bg-secondary">' + (parseInt(button.querySelector('.badge').textContent) - 1) + '</span>';
+                            } else {
+                                button.classList.remove('btn-outline-danger');
+                                button.classList.add('btn-danger');
+                                button.innerHTML = '<span>❤️ Liked</span> <span class="badge bg-secondary">' + (parseInt(button.querySelector('.badge').textContent) + 1) + '</span>';
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        this.submit(); // Fallback till vanlig submit
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -6,7 +6,7 @@ namespace BroadcastSocialMedia.ViewModels
     {
         public List<HomeBroadcastViewModel> Broadcasts { get; set; } = new List<HomeBroadcastViewModel>();
 
-        // Lägg till dessa om du behöver:
+     
         public string? SearchQuery { get; set; }
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }

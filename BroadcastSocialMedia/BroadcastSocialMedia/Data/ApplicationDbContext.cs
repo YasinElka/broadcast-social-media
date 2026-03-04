@@ -11,13 +11,13 @@ namespace BroadcastSocialMedia.Data
         {
         }
 
-        public DbSet<Broadcast> Broadcasts { get; set; }
-        public DbSet<Like> Likes { get; set; }
-        public DbSet<UserFollowing> UserFollowings { get; set; }
+        public DbSet<Broadcast> Broadcasts { get; set; } // DbSet för Broadcast
+        public DbSet<Like> Likes { get; set; } // DbSet för Like
+        public DbSet<UserFollowing> UserFollowings { get; set; } // DbSet för UserFollowing
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder builder) // Konfigurera modeller och relationer
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(builder); // Behåll Identity-konfigurationen
 
             // Konfigurera Broadcast
             builder.Entity<Broadcast>(entity =>
@@ -30,15 +30,16 @@ namespace BroadcastSocialMedia.Data
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(b => b.Content)
-                    .IsRequired() // Gör Content required
-                    .HasDefaultValue(""); // Defaultvärde tom sträng
+                    .IsRequired()
+                    .HasDefaultValue("");
 
                 entity.Property(b => b.CreatedAt)
-                    .HasDefaultValueSql("GETDATE()"); // Auto-datum
+                    .HasDefaultValueSql("GETDATE()");
 
-                entity.Property(b => b.Published)
-                    .HasDefaultValueSql("GETDATE()"); // Auto-datum
+                entity.Property(b => b.Published) // ÄNDRA DENNA
+                    .HasDefaultValueSql("GETDATE()");
             });
+
 
             // Konfigurera Like
             builder.Entity<Like>(entity =>

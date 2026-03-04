@@ -18,10 +18,10 @@ namespace BroadcastSocialMedia.Models
         public string Content { get; set; } = string.Empty;
         public string? ImageUrl { get; set; }
 
-        public DateTime CreatedAt { get; set; }
-        public DateTime? ScheduledFor { get; set; }
-        public DateTime Published { get; set; }
-        public string? Platform { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        public DateTime Published { get; set; } = DateTime.UtcNow;
+       
 
         public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
 

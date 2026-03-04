@@ -1,0 +1,114 @@
+﻿@model BroadcastSocialMedia.ViewModels.UsersIndexViewModel
+@{
+    ViewData["Title"] = "Sök användare";
+    var currentUserId = ViewBag.CurrentUserId as string;
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Sök användare</h1>
+
+    <!-- Sökformulär -->
+    <form method="get" asp-action="Search" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="query" class="form-control form-control-lg"
+                   placeholder="Sök på användarnamn eller e-post..."
+                   value="@Model.Search" />
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-search"></i> Sök
+            </button>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.Search))
+    {
+        <h5 class="mb-3">Sökresultat för "@Model.Search"</h5>
+
+        @if (!Model.Result.Any())
+        {
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Inga användare hittades.
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var user in Model.Result)
+                {
+                    var isCurrentUser = currentUserId == user.Id;
+
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="@user.ProfileImageUrl"
+                                         alt="@user.UserName"
+                                         class="rounded-circle me-3"
+                                         style="width: 60px; height: 60px; object-fit: cover; border: 2px solid #007bff;"
+                                         onerror="this.src='/images/default-avatar.png'" />
+                                    <div>
+                                        <a asp-controller="Home" asp-action="Profile" asp-route-userId="@user.Id" class="text-decoration-none">
+                                            <h5 class="mb-1 text-dark">@user.UserName</h5>
+                                        </a>
+
+                                        <small class="text-muted">
+                                            <i class="fas fa-users"></i> @user.FollowerCount följare
+                                        </small>
+                                    </div>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(user.Bio))
+                                {
+                                    <p class="card-text text-muted small mb-3">@user.Bio</p>
+                                }
+
+                                <div class="d-flex justify-content-between mt-3">
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        if (isCurrentUser)
+                                        {
+                                            <span class="text-muted">
+                                                <i class="fas fa-user-check"></i> Detta är du
+                                            </span>
+                                        }
+                                        else if (user.IsFollowing)
+                                        {
+
+                                            <form asp-action="Unfollow" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-user-minus"></i> Sluta följ
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Follow" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-user-plus"></i> Följ
+                                                </button>
+                                            </form>
+                                        }
+                                    }
+                                    <a asp-action="Profile" asp-route-userId="@user.Id" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-user"></i> Profil
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center text-muted py-5">
+            <i class="fas fa-search fa-4x mb-3"></i>
+            <h4>Sök efter användare</h4>
+            <p>Ange ett användarnamn eller e-post för att hitta personer att följa.</p>
+        </div>
+    }
+</div>

@@ -1,0 +1,119 @@
+﻿@model BroadcastSocialMedia.ViewModels.CreateBroadcastViewModel
+
+@{
+    ViewData["Title"] = "Skapa nytt inlägg";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateBroadcast" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <!-- Innehåll -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Content" class="form-label fw-bold"></label>
+                            <textarea asp-for="Content"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Vad tänker du på?"
+                                      id="broadcastContent"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                            <small class="text-muted float-end">
+                                <span id="charCount">0</span>/500
+                            </small>
+                        </div>
+
+                        <!-- Bilduppladdning -->
+                        <div class="form-group mb-4">
+                            <label asp-for="ImageFile" class="form-label fw-bold"></label>
+                            <input asp-for="ImageFile"
+                                   type="file"
+                                   class="form-control"
+                                   accept="image/*"
+                                   id="imageInput"
+                                   onchange="previewImage(this)">
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+
+                            <!-- Förhandsgranskning av bild -->
+                            <div id="imagePreviewContainer" class="mt-3 text-center" style="display: none;">
+                                <div class="position-relative d-inline-block">
+                                    <img id="imagePreview"
+                                         class="img-fluid rounded border"
+                                         style="max-height: 300px;"
+                                         alt="Förhandsgranskning">
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2"
+                                            onclick="clearImage()">
+                                        <i class="fas fa-times"></i> Ta bort
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Knappar -->
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Tillbaka
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Publicera
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+       
+        // Teckenräknare
+        const contentTextarea = document.getElementById('broadcastContent');
+        const charCountSpan = document.getElementById('charCount');
+
+        if (contentTextarea) {
+            contentTextarea.addEventListener('input', function() {
+                charCountSpan.textContent = this.value.length;
+            });
+            charCountSpan.textContent = contentTextarea.value.length;
+        }
+
+        // Förhandsgranska bild
+        function previewImage(input) {
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const preview = document.getElementById('imagePreview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Rensa bild
+        function clearImage() {
+            const imageInput = document.getElementById('imageInput');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+
+            imageInput.value = '';
+            previewContainer.style.display = 'none';
+        }
+    </script>
+}

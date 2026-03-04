@@ -1,0 +1,68 @@
+﻿@model List<BroadcastSocialMedia.ViewModels.FollowingViewModel>
+@{
+    ViewData["Title"] = "Personer jag följer";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Personer jag följer</h1>
+
+    <!-- TEMPORÄR DEBUG - visa bild-URLerna -->
+    <div class="alert alert-secondary mb-3">
+        <strong>Debug:</strong> Antal användare: @Model.Count<br>
+        @foreach (var user in Model)
+        {
+            <div>@user.UserName: @(user.ProfileImageUrl ?? "NULL")</div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <!-- resten oförändrat -->
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var user in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="@user.ProfileImageUrl"
+                                     alt="@user.UserName"
+                                     class="rounded-circle me-3"
+                                     style="width: 60px; height: 60px; object-fit: cover; border: 2px solid #007bff;"
+                                     onerror="this.src='/images/default-avatar.png'" />
+                                <div>
+                                    <h5 class="card-title mb-0">@user.UserName</h5>
+                                    <small class="text-muted">
+                                        Följde @user.FollowedAt.ToString("d MMM yyyy")
+                                    </small>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(user.Bio))
+                            {
+                                <p class="card-text text-muted small mb-3">@user.Bio</p>
+                            }
+
+                            <div class="d-flex justify-content-between">
+                                <a asp-action="Profile" asp-route-id="@user.UserId"
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-user"></i> Profil
+                                </a>
+                                <form asp-action="Unfollow" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="userId" value="@user.UserId" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-user-minus"></i> Sluta följ
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
