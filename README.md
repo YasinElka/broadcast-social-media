@@ -1,40 +1,58 @@
 # Broadcast Social Media
 
-A programming project developed to practise software development, strengthen problem-solving skills, and gain hands-on coding experience.
+A social media web application built with C# and ASP.NET Core as part of my software development studies.
 
 ## About the Project
 
-Broadcast Social Media is a learning project where I explore programming concepts through practical development.
+Broadcast Social Media is a web application project focused on social networking functionality and user account management.
 
-The goal is to improve my understanding of software development, write clearer code, and build experience by working on a project from start to finish.
+The project uses an MVC-style structure to organize controllers, models, view models, views, and application data.
+
+## Features
+
+The project includes development work related to:
+
+- User registration and identity management
+- User profiles and profile pictures
+- Follow functionality
+- Popular posts
+- Structured application logic using controllers, models, and view models
 
 ## Technologies
 
-- **C#** — programming language
+- C#
+- ASP.NET Core
+- ASP.NET Core Identity
+- MVC architecture
+- Razor Views
+- HTML and CSS
 
-*Additional technologies will be listed as the project develops.*
+## Project Structure
+
+- `Controllers/` — handles application requests
+- `Models/` — represents application data
+- `ViewModels/` — provides data to the views
+- `Views/` — contains the user interface
+- `Data/` — application data and database-related code
+- `wwwroot/` — static assets
 
 ## Getting Started
 
-To explore the project locally:
-
 1. Clone this repository.
-2. Open the project in your preferred development environment.
-3. Review the source code and follow the project structure to understand how it works.
+2. Open `BroadcastSocialMedia.sln` in Visual Studio.
+3. Review the application configuration in `appsettings.json`.
+4. Configure the required database connection and any other local settings.
+5. Build and run the application.
 
-## What I'm Learning
+**Note:** Do not commit passwords, API keys, or other secrets to the repository.
 
-- Writing readable and maintainable code.
-- Improving problem-solving and debugging skills.
-- Applying programming concepts in a practical project.
-- Building confidence through independent learning.
+## What I Practised
 
-## Future Improvements
-
-- Document the main application features.
-- Improve error handling and code organization.
-- Add tests where appropriate.
-- Expand the project with new functionality.
+- Building a web application with C# and ASP.NET Core
+- Organizing code using MVC concepts
+- Working with user accounts and identity management
+- Developing profile-related functionality
+- Structuring a project for maintainability
 
 ---
 
